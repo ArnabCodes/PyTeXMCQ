@@ -1,0 +1,59 @@
+\documentclass{exam}
+
+\usepackage{graphicx, siunitx, color, amsmath, amssymb} 
+\usepackage{xcolor,tabto}
+\CorrectChoiceEmphasis{\color{red}\bfseries}
+\DeclareSIUnit\angstrom{\text {Å}}
+
+\NumTabs{4}
+
+\makeatletter
+\newcount\my@repeat@count
+\newcommand{\myrepeat}[2]{%
+  \begingroup
+  \my@repeat@count=\z@
+  \@whilenum\my@repeat@count<#1\do{#2\advance\my@repeat@count\@ne}%
+  \endgroup
+}
+\makeatother
+
+\usepackage{xpatch}
+\xpatchcmd{\oneparcheckboxes}{\penalty -50\hskip 1em plus 1em\relax}{\tab}{}{}
+\xpatchcmd{\oneparcheckboxes}{\penalty -50\hskip 1em plus 1em\relax}{\tab}{}{}
+
+\def\blanksquare{\hspace{-0.4pt}\fbox{\phantom{B}}}
+\def\fsquare#1{\hspace{-0.4pt}\fbox{#1}}
+
+\title{  \large   Enrollment No. \fsquare{B}\fsquare{T}\myrepeat{8}{\blanksquare} \\ \vspace{1cm} \normalsize Visvesvaraya National Institute of Technology, Nagpur \\ Department of Physics \\ PHL102, S Section \\ {\vspace{0.5 cm} \large \bf{QUIZ 2}}}
+\date{}
+
+% Options of the exam class
+% \printanswers
+% \CorrectChoiceEmphasis{\bfseries}
+% \shadedsolutions
+% \unframedsolutions
+\bracketedpoints
+\pointsinrightmargin
+
+\definecolor{SolutionColor}{rgb}{0.93, 0.93, 0.88}
+
+\newcommand{\examheader}{
+\vspace{-1.7cm}\begin{center}
+    \begin{tabular}{l c r}
+     \bf Full Marks: 10 \hspace{2cm}  & \bf Answer all questions.
+     & \bf \hspace{2cm} Time: 1 hr
+\end{tabular}
+\end{center}
+
+\begin{center}
+\hrule
+\vspace{2mm}
+\hspace{-1cm}
+    \begin{tabular}{l l}
+     Electron's charge $e = 1.602 \times 10^{-19}$ C, & Electron's mass $m_e = 9.1 \times 10^{-31}$ kg,\\  
+     Planck's constant  $h = 6.6 \times 10^{-34}$ J s, & Boltzmann's constant  $k = 1.38 \times 10^{-23}$ J/K,
+\end{tabular}
+\vspace{2mm}
+\hrule
+\end{center}
+} 
