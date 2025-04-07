@@ -134,7 +134,7 @@ class QuestionPaperGenerator:
         paper_content = r"\input{preamble}" + "\n\n"
         # Create title with roll number split into individual boxes
         title_boxes = ''.join([f"\\fsquare{{{c}}}" for c in roll_number])
-        paper_content += f"\\title{{  \\large   Enrollment No. {title_boxes} \\\\ \\vspace{{1cm}} \\normalsize Visvesvaraya National Institute of Technology, Nagpur \\\\ Department of Physics \\\\ PHL102, S Section \\\\ {{\\vspace{{0.5 cm}} \\large \\bf{{QUIZ 2}}}}}}\n"
+        paper_content += f"\\title{{  \\large   Enrollment No. {title_boxes} \\\\ \\vspace{{1cm}} \\normalsize ABC Institute of Technology \\\\ Department of Physics \\\\ PHY101, X Section \\\\ {{\\vspace{{0.5 cm}} \\large \\bf{{QUIZ}}}}}}\n"
         paper_content += r"\begin{document}" + "\n"
         paper_content += r"\maketitle" + "\n"
         paper_content += r"\examheader" + "\n"
