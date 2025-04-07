@@ -49,15 +49,17 @@ class QuestionPaperGenerator:
         self.preamble_file = preamble_file
         self.topics_dir = topics_dir
         self.questions = {}
-        self.original_dir = os.getcwd()
         self.temp_dir = None
+        self.original_dir = None
         
     def setup_temp_dir(self):
-        """Set up temporary directory for intermediate files."""
-        self.temp_dir = tempfile.mkdtemp()
-        # Copy preamble file to temp directory
-        shutil.copy(self.preamble_file, os.path.join(self.temp_dir, 'preamble.sty'))
-        # Change to temp directory
+        """Create a temporary directory for intermediate files."""
+        # Create temp directory in system's temp directory
+        self.temp_dir = tempfile.mkdtemp(prefix='quiz_generator_')
+        # Copy preamble to temp directory once
+        shutil.copy2(self.preamble_file, os.path.join(self.temp_dir, "preamble.tex"))
+        # Store original directory and change to temp directory
+        self.original_dir = os.getcwd()
         os.chdir(self.temp_dir)
             
     def load_questions(self):
@@ -129,8 +131,7 @@ class QuestionPaperGenerator:
         random.seed(main_seed)
         
         # Create question paper content
-        paper_content = r"\documentclass{exam}" + "\n"
-        paper_content += r"\usepackage{preamble}" + "\n\n"
+        paper_content = r"\input{preamble}" + "\n\n"
         # Create title with roll number split into individual boxes
         title_boxes = ''.join([f"\\fsquare{{{c}}}" for c in roll_number])
         paper_content += f"\\title{{  \\large   Enrollment No. {title_boxes} \\\\ \\vspace{{1cm}} \\normalsize ABC Institute of Technology \\\\ Department of Physics \\\\ PHY101, X Section \\\\ {{\\vspace{{0.5 cm}} \\large \\bf{{QUIZ}}}}}}\n"
@@ -247,6 +248,7 @@ class QuestionPaperGenerator:
             r'\usepackage{hyperref}',
             r'\usepackage{afterpage}',
             r'\begin{document}',
+            r'\pagenumbering{gobble}',  # Turn off page numbers
         ]
         
         for pdf in pdf_files:
@@ -309,7 +311,7 @@ def main():
     roll_numbers = expand_roll_numbers(config['roll_numbers'])
     
     # Initialize generator
-    generator = QuestionPaperGenerator("preamble.sty", "topics")
+    generator = QuestionPaperGenerator("preamble.tex", "topics")
     
     try:
         # Generate papers for all roll numbers
