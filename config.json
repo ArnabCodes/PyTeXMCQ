@@ -3,12 +3,11 @@
         "quantum_mechanics": 0,
         "quantum_applications": 0,
         "crystal_structure": 0,
-        "semiconductor_physics": 10,
-        "device_physics": 10,
-        "laser_optics": 10
+        "semiconductor_physics": 3,
+        "device_physics": 3,
+        "laser_optics": 2
     },
     "roll_numbers": [
-        "BT24ECE01...03",
-        "BT24ECE10"
+        "BT24ECE001...003"
     ]
 } 
