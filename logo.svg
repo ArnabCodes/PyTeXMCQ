@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Circle -->
+    <circle cx="256" cy="256" r="240" fill="#4a5568" />
+    
+    <!-- Python Snake Body -->
+    <path d="M256,100 C200,100 150,150 150,200 C150,250 200,300 256,300 C312,300 362,250 362,200" 
+          stroke="#f7fafc" stroke-width="20" fill="none" />
+    <path d="M256,300 C312,300 362,350 362,400 C362,450 312,500 256,500 C200,500 150,450 150,400" 
+          stroke="#f7fafc" stroke-width="20" fill="none" />
+    
+    <!-- LaTeX Symbol -->
+    <text x="256" y="256" 
+          font-family="Arial" 
+          font-size="120" 
+          font-weight="bold" 
+          fill="#f7fafc" 
+          text-anchor="middle" 
+          dominant-baseline="middle">L</text>
+    
+    <!-- Quiz Elements -->
+    <circle cx="200" cy="200" r="20" fill="#f7fafc" />
+    <circle cx="312" cy="200" r="20" fill="#f7fafc" />
+    <circle cx="256" cy="400" r="20" fill="#f7fafc" />
+    
+    <!-- Project Name -->
+    <text x="256" y="450" 
+          font-family="Arial" 
+          font-size="24" 
+          fill="#f7fafc" 
+          text-anchor="middle">PyTeXMCQ</text>
+</svg> 
