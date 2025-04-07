@@ -2,6 +2,31 @@
 
 A Python-based tool for generating randomized multiple-choice quiz papers and answer keys in LaTeX format. Perfect for educators who need to create different versions of the same quiz for multiple students while maintaining consistency and professional formatting.
 
+## About
+
+PyTeXMCQ is a powerful tool designed to streamline the process of creating and managing multiple-choice quizzes. It addresses common challenges faced by educators:
+
+- **Academic Integrity**: By generating unique versions of the same quiz for each student, it helps maintain academic integrity while ensuring fair assessment.
+- **Time Efficiency**: Automates the tedious process of creating multiple versions of quizzes and their corresponding answer keys.
+- **Consistency**: Ensures all quiz versions maintain the same level of difficulty and cover the same topics.
+- **Professional Formatting**: Leverages LaTeX to produce professionally formatted documents with consistent styling.
+
+### Key Benefits
+
+- **Deterministic Randomization**: Each student receives a unique but consistent version of the quiz based on their roll number
+- **Scalability**: Efficiently handles large class sizes with parallel processing
+- **Flexibility**: Supports custom LaTeX formatting and various question types
+- **Reliability**: Robust error handling and validation ensure smooth operation
+- **Maintainability**: Well-documented codebase with clear architecture
+
+### Use Cases
+
+- University course quizzes and examinations
+- Practice tests with multiple versions
+- Randomized homework assignments
+- Self-assessment materials
+- Professional certification practice tests
+
 ## Features
 
 - 🔑 Generates unique quiz versions for each student using roll numbers as seeds
