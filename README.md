@@ -115,12 +115,12 @@ flowchart TB
     Parallel --> H[Cleanup & Finalize]
     H --> I([End])
     
-    style A fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
-    style I fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
-    style Input fill:#f0f7ff,stroke:#c4d8f5,stroke-width:2px
-    style Generation fill:#fff7e6,stroke:#ffd699,stroke-width:2px
-    style Compilation fill:#f5f0ff,stroke:#d9c4f5,stroke-width:2px
-    style Parallel fill:#e6fff0,stroke:#99e6b3,stroke-width:2px
+    style A fill:#4a5568,stroke:#2d3748,stroke-width:2px,color:white
+    style I fill:#4a5568,stroke:#2d3748,stroke-width:2px,color:white
+    style Input fill:#f7fafc,stroke:#cbd5e0,stroke-width:2px,color:#2d3748
+    style Generation fill:#f0fff4,stroke:#c6f6d5,stroke-width:2px,color:#2d3748
+    style Compilation fill:#fff5f5,stroke:#fed7d7,stroke-width:2px,color:#2d3748
+    style Parallel fill:#ebf8ff,stroke:#bee3f8,stroke-width:2px,color:#2d3748
 ```
 
 ### Component Descriptions
