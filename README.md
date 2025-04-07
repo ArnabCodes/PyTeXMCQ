@@ -25,15 +25,15 @@ A Python-based tool for generating randomized multiple-choice quiz papers and an
    cd PyTeXMCQ
    ```
 
-2. Create and activate a virtual environment:
+2. Create and activate a virtual environment (optional):
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
    ```
 
-3. Install required packages:
+3. Verify LaTeX installation:
    ```bash
-   pip install -r requirements.txt
+   pdflatex --version
    ```
 
 ## Project Structure
