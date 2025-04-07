@@ -10,13 +10,17 @@
             <stop offset="0%" style="stop-color:#48bb78;stop-opacity:1" />
             <stop offset="100%" style="stop-color:#38a169;stop-opacity:1" />
         </linearGradient>
+        <linearGradient id="texGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f7fafc;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#e2e8f0;stop-opacity:1" />
+        </linearGradient>
     </defs>
     
     <!-- Background Circle -->
     <circle cx="256" cy="256" r="240" fill="url(#bgGradient)" />
     
-    <!-- OMR Sheet Grid -->
-    <g transform="translate(156, 156)" fill="none" stroke="#f7fafc" stroke-width="2" opacity="0.3">
+    <!-- OMR Sheet Grid (Subtle) -->
+    <g transform="translate(156, 156)" fill="none" stroke="#f7fafc" stroke-width="1" opacity="0.1">
         <!-- Vertical lines -->
         <line x1="0" y1="0" x2="0" y2="200" />
         <line x1="50" y1="0" x2="50" y2="200" />
@@ -32,7 +36,20 @@
         <line x1="0" y1="200" x2="200" y2="200" />
     </g>
     
-    <!-- Python Snake -->
+    <!-- Classic TeX Logo -->
+    <g transform="translate(256, 256)">
+        <!-- T -->
+        <path d="M-40,-60 L40,-60 M0,-60 L0,20" 
+              stroke="url(#texGradient)" stroke-width="8" fill="none" />
+        <!-- E -->
+        <path d="M60,-60 L60,20 M60,-60 L20,-60 M60,-20 L20,-20 M60,20 L20,20" 
+              stroke="url(#texGradient)" stroke-width="8" fill="none" />
+        <!-- X -->
+        <path d="M80,-60 L120,20 M120,-60 L80,20" 
+              stroke="url(#texGradient)" stroke-width="8" fill="none" />
+    </g>
+    
+    <!-- Python Snake Wrapping Around TeX -->
     <path d="M256,100 C200,100 150,150 150,200 C150,250 200,300 256,300 C312,300 362,250 362,200" 
           stroke="url(#snakeGradient)" stroke-width="20" fill="none" />
     <path d="M256,300 C312,300 362,350 362,400 C362,450 312,500 256,500 C200,500 150,450 150,400" 
@@ -42,20 +59,7 @@
     <circle cx="200" cy="200" r="10" fill="#f7fafc" />
     <circle cx="312" cy="200" r="10" fill="#f7fafc" />
     
-    <!-- TeX Symbol -->
-    <g transform="translate(256, 256)">
-        <!-- T -->
-        <path d="M-40,-60 L40,-60 M0,-60 L0,20" 
-              stroke="#f7fafc" stroke-width="8" fill="none" />
-        <!-- E -->
-        <path d="M60,-60 L60,20 M60,-60 L20,-60 M60,-20 L20,-20 M60,20 L20,20" 
-              stroke="#f7fafc" stroke-width="8" fill="none" />
-        <!-- X -->
-        <path d="M80,-60 L120,20 M120,-60 L80,20" 
-              stroke="#f7fafc" stroke-width="8" fill="none" />
-    </g>
-    
-    <!-- MCQ Bubbles -->
+    <!-- MCQ Bubbles (Floating) -->
     <circle cx="180" cy="400" r="15" fill="#f7fafc" opacity="0.8" />
     <circle cx="256" cy="400" r="15" fill="#f7fafc" opacity="0.8" />
     <circle cx="332" cy="400" r="15" fill="#f7fafc" opacity="0.8" />
