@@ -95,6 +95,42 @@ BT24ECE002
 BT24ECE003
 ```
 
+### Question Selection
+The number of questions to be selected from each topic is configured in the `questions_per_topic` dictionary in `generate_papers.py`:
+
+```python
+questions_per_topic = {
+    "quantum_mechanics": 0,
+    "quantum_applications": 0,
+    "crystal_structure": 0,
+    "semiconductor_physics": 10,
+    "device_physics": 10,
+    "laser_optics": 1
+}
+```
+
+- Each key is the topic name (matching the .tex file name without extension)
+- Each value is the number of questions to select from that topic
+- Set a value to 0 to skip questions from that topic
+- If you request more questions than available, all questions from that topic will be used
+
+### Randomization Process
+The quiz generator employs a deterministic randomization process to ensure:
+1. Each student gets a unique but reproducible paper
+2. Questions and options are thoroughly randomized
+3. Answer keys correctly match each student's paper
+
+The randomization works as follows:
+1. **Student-specific Seed**: A unique random seed is generated for each roll number using MD5 hash
+2. **Question Selection**: For each topic:
+   - Questions are randomly selected based on the configured count
+   - The selection is deterministic for each roll number
+3. **Question Order**: Selected questions from all topics are shuffled together
+4. **Option Randomization**: For each question:
+   - Multiple choice options are randomly shuffled
+   - The correct answer is tracked and preserved in the answer key
+   - Option order is deterministic for each question in a student's paper
+
 ### Customizing Headers
 Modify the header in `preamble.tex` to change:
 - Title format
