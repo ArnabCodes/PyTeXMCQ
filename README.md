@@ -73,69 +73,50 @@ The system uses a JSON configuration file (`config.json`) that defines:
 The following flowchart illustrates the system's core components and their interactions:
 
 ```mermaid
-%%{init: {
-  'theme': 'base',
-  'themeVariables': {
-    'primaryColor': '#6C8EBF',
-    'primaryTextColor': '#fff',
-    'primaryBorderColor': '#5C7DAF',
-    'lineColor': '#5C7DAF',
-    'secondaryColor': '#FFB366',
-    'tertiaryColor': '#B3D7FF'
-  }
-}}%%
 flowchart TB
-    classDef start fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
-    classDef end fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
-    classDef process fill:#6C8EBF,stroke:#5C7DAF,stroke-width:2px,color:white
-    classDef subProcess fill:#FFB366,stroke:#FF9933,stroke-width:2px,color:white
-    classDef io fill:#B3D7FF,stroke:#99C2FF,stroke-width:2px
-    
-    A([Start]):::start --> B[Load Configuration]:::process
-    B --> C[Initialize System]:::process
-    
-    subgraph Input["📥 Input Processing"]
+    subgraph Input["Input Processing"]
         direction TB
-        D[Load Questions]:::process --> D1[Parse Topic Files]:::subProcess
-        D1 --> D2[Extract & Validate]:::subProcess
-        D2 --> D3[Build Question Bank]:::subProcess
+        D1[Parse Topic Files]
+        D2[Extract & Validate]
+        D3[Build Question Bank]
+        D1 --> D2 --> D3
     end
     
-    C --> Input
-    
-    subgraph Generation["⚙️ Paper Generation"]
+    subgraph Generation["Paper Generation"]
         direction TB
-        E1[Create Unique Seeds]:::subProcess
-        E2[Select Questions]:::subProcess
-        E3[Randomize Content]:::subProcess
+        E1[Create Unique Seeds]
+        E2[Select Questions]
+        E3[Randomize Content]
         E1 --> E2 --> E3
     end
     
-    Input --> Generation
-    
-    subgraph Compilation["📄 Document Processing"]
+    subgraph Compilation["Document Processing"]
         direction TB
-        F1[Generate LaTeX]:::subProcess
-        F2[Create Answer Keys]:::subProcess
-        F3[Compile Documents]:::subProcess
+        F1[Generate LaTeX]
+        F2[Create Answer Keys]
+        F3[Compile Documents]
         F1 --> F2 --> F3
     end
     
-    Generation --> Compilation
-    
-    subgraph Parallel["⚡ Parallel Processing"]
+    subgraph Parallel["Parallel Processing"]
         direction TB
-        G1[Worker Pool]:::subProcess
-        G2[Process Tasks]:::subProcess
-        G3[Merge Results]:::subProcess
+        G1[Worker Pool]
+        G2[Process Tasks]
+        G3[Merge Results]
         G1 --> G2 --> G3
     end
     
+    A([Start]) --> B[Load Configuration]
+    B --> C[Initialize System]
+    C --> Input
+    Input --> Generation
+    Generation --> Compilation
     Compilation --> Parallel
+    Parallel --> H[Cleanup & Finalize]
+    H --> I([End])
     
-    Parallel --> H[Cleanup & Finalize]:::process
-    H --> I([End]):::end
-    
+    style A fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
+    style I fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
     style Input fill:#f0f7ff,stroke:#c4d8f5,stroke-width:2px
     style Generation fill:#fff7e6,stroke:#ffd699,stroke-width:2px
     style Compilation fill:#f5f0ff,stroke:#d9c4f5,stroke-width:2px
