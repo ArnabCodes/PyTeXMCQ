@@ -1,3 +1,4 @@
+% !TeX root = ignore
 \documentclass{exam}
 
 \usepackage{graphicx, siunitx, color, amsmath, amssymb} 
@@ -21,10 +22,10 @@
 \xpatchcmd{\oneparcheckboxes}{\penalty -50\hskip 1em plus 1em\relax}{\tab}{}{}
 \xpatchcmd{\oneparcheckboxes}{\penalty -50\hskip 1em plus 1em\relax}{\tab}{}{}
 
-\def\blanksquare{\hspace{-0.4pt}\fbox{\phantom{B}}}
-\def\fsquare#1{\hspace{-0.4pt}\fbox{#1}}
+\def\blanksquare{\hspace{-0.4pt}\fbox{\rule{0pt}{0.8em}\phantom{B}}}
+\def\fsquare#1{\hspace{-0.4pt}\fbox{\rule{0pt}{0.8em}#1}}
 
-\title{  \large   Enrollment No. \fsquare{X}\fsquare{X}\myrepeat{8}{\blanksquare} \\ \vspace{1cm} \normalsize ABC Institute of Technology \\ Department of Physics \\ PHY101, X Section \\ {\vspace{0.5 cm} \large \bf{QUIZ}}}
+\title{  \large   Enrollment No. \fsquare{X}\fsquare{X}\myrepeat{8}{\blanksquare} \\ \vspace{1cm} \normalsize \langle Name of the Institute \rangle \\ Department of Physics \\ PHY101, X Section \\ {\vspace{0.5 cm} \large \bf{QUIZ}}}
 \date{}
 
 % Options of the exam class
@@ -50,8 +51,8 @@
 \vspace{2mm}
 \hspace{-1cm}
     \begin{tabular}{l l}
-     Electron's charge $e = 1.602 \times 10^{-19}$ C, & Electron's mass $m_e = 9.1 \times 10^{-31}$ kg,\\  
-     Planck's constant  $h = 6.6 \times 10^{-34}$ J s, & Boltzmann's constant  $k = 1.38 \times 10^{-23}$ J/K,
+     Electron's charge $e = 1.602 \times 10^{-19}$ C, &\qquad Electron's mass $m_e = 9.1 \times 10^{-31}$ kg,\\  
+     Planck's constant  $h = 6.6 \times 10^{-34}$ J s, &\qquad Boltzmann's constant  $k = 1.38 \times 10^{-23}$ J/K,
 \end{tabular}
 \vspace{2mm}
 \hrule
