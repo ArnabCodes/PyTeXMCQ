@@ -26,6 +26,8 @@ This guide provides detailed information about the project's architecture, devel
    - Handles PDF merging and manipulation
    - Uses PyPDF2 for PDF operations
    - Provides utility functions for file management
+   - Adds blank pages when merging to ensure each question paper starts on an odd-numbered page
+   - Maintains consistent page numbering across all papers
 
 4. **LaTeX Templates** (`pytexmcq/templates/`)
    - `preamble.tex`: Defines document structure and formatting
