@@ -1,4 +1,4 @@
-# LaTeX Quiz Generator
+# PyTeXMCQ
 
 A powerful and flexible tool for generating randomized multiple-choice quizzes using LaTeX. Perfect for educators who need to create different versions of the same quiz for multiple students while maintaining consistency and professional formatting.
 
@@ -10,19 +10,20 @@ A powerful and flexible tool for generating randomized multiple-choice quizzes u
 - 🔄 Combines all quizzes and answer keys into consolidated PDFs
 - 📋 Supports custom LaTeX preamble for advanced formatting
 - 🎯 Perfect for classroom settings with multiple students
+- ⚙️ Highly configurable through a central configuration file
 
 ## Prerequisites
 
 - Python 3.8 or higher
 - LaTeX distribution (TeX Live or MiKTeX)
-- Required Python packages (see `requirements.txt`)
+- Required Python packages (installed automatically)
 
 ## Installation
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/latex-quiz-generator.git
-cd latex-quiz-generator
+git clone https://github.com/ArnabCodes/PyTeXMCQ.git
+cd PyTeXMCQ
 ```
 
 2. Create and activate a virtual environment:
@@ -31,68 +32,77 @@ python -m venv .venv
 source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
 ```
 
-3. Install required packages:
+3. Install the package in development mode:
 ```bash
-pip install -r requirements.txt
+pip install -e .
 ```
 
 ## Project Structure
 
 ```
-latex-quiz-generator/
-├── generate_papers.py     # Main script for generating quizzes
-├── merge_pdfs.py         # Script for combining PDFs
-├── preamble.tex          # LaTeX preamble with formatting
-├── roll_numbers.txt      # List of student roll numbers
-├── papers/              # Directory for question papers
-├── answers/             # Directory for answer keys
-└── topics/             # Directory for question banks
+PyTeXMCQ/
+├── pytexmcq/                # Main package directory
+│   ├── __init__.py         # Package initialization
+│   ├── __main__.py         # Entry point
+│   ├── config/             # Configuration
+│   │   └── config.py       # Central configuration file
+│   ├── core/               # Core functionality
+│   │   └── generator.py    # Quiz generation logic
+│   ├── templates/          # LaTeX templates
+│   │   └── preamble.tex    # Document preamble
+│   └── utils/              # Utility functions
+│       └── pdf_utils.py    # PDF manipulation
+├── topics/                 # Question bank directory
+├── papers/                 # Generated question papers
+├── answers/               # Generated answer keys
+├── setup.py               # Package setup
+├── requirements.txt       # Development dependencies
+└── README.md             # This file
 ```
+
+## Configuration
+
+All configuration settings are centralized in `pytexmcq/config/config.py`:
+
+- Quiz settings (title, department, course code)
+- Number of questions per topic
+- Physical constants for the quiz header
+- File paths and directories
+- LaTeX compilation options
 
 ## Usage
 
 1. Create your question bank:
    - Place your questions in `.tex` files in the `topics/` directory
-   - Follow the template format (see example in `USER_GUIDE.md`)
+   - Follow the template format (see `USER_GUIDE.md`)
 
-2. Set up student roll numbers:
+2. Configure the quiz:
+   - Adjust settings in `pytexmcq/config/config.py`
+   - Set the number of questions per topic
+   - Customize quiz appearance
+
+3. Set up student roll numbers:
    - Add roll numbers to `roll_numbers.txt` (one per line)
 
-3. Generate quizzes:
+4. Generate quizzes:
 ```bash
-python generate_papers.py
+python -m pytexmcq
 ```
 
-4. Merge all papers into consolidated PDFs:
-```bash
-python merge_pdfs.py
-```
+This will:
+- Generate unique papers for each roll number
+- Create corresponding answer keys
+- Merge papers into consolidated PDFs
 
-## Question Format
+## Development
 
-Questions should be written in LaTeX using the `exam` document class. Example:
+To contribute to the project:
 
-```latex
-\question[0.5] What is the correct answer?
-\begin{oneparcheckboxes}
-    \choice Incorrect option
-    \CorrectChoice Correct option
-    \choice Another incorrect option
-    \choice Yet another incorrect option
-\end{oneparcheckboxes}
-```
-
-For more detailed formatting instructions, see `USER_GUIDE.md`.
-
-## Customization
-
-- Modify `preamble.tex` to customize the quiz appearance
-- Adjust spacing and formatting in the LaTeX preamble
-- Customize headers, footers, and page layout
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests (when available)
+5. Submit a pull request
 
 ## License
 
