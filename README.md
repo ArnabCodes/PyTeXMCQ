@@ -70,88 +70,109 @@ The system uses a JSON configuration file (`config.json`) that defines:
 
 ## System Flowchart
 
-The following flowchart breaks down the system into its core functional components and their interactions:
+The following flowchart illustrates the system's core components and their interactions:
 
 ```mermaid
-graph TD
-    A[Start] --> B[Load Configuration]
-    B --> C[Initialize ProgressIndicator]
-    C --> D[Load Questions]
+%%{init: {
+  'theme': 'base',
+  'themeVariables': {
+    'primaryColor': '#6C8EBF',
+    'primaryTextColor': '#fff',
+    'primaryBorderColor': '#5C7DAF',
+    'lineColor': '#5C7DAF',
+    'secondaryColor': '#FFB366',
+    'tertiaryColor': '#B3D7FF'
+  }
+}}%%
+flowchart TB
+    classDef start fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
+    classDef end fill:#9254de,stroke:#6B2FA8,stroke-width:2px,color:white
+    classDef process fill:#6C8EBF,stroke:#5C7DAF,stroke-width:2px,color:white
+    classDef subProcess fill:#FFB366,stroke:#FF9933,stroke-width:2px,color:white
+    classDef io fill:#B3D7FF,stroke:#99C2FF,stroke-width:2px
     
-    subgraph Question Management
-        D --> D1[Parse Topic Files]
-        D1 --> D2[Extract Questions]
-        D2 --> D3[Store in Memory]
+    A([Start]):::start --> B[Load Configuration]:::process
+    B --> C[Initialize System]:::process
+    
+    subgraph Input["📥 Input Processing"]
+        direction TB
+        D[Load Questions]:::process --> D1[Parse Topic Files]:::subProcess
+        D1 --> D2[Extract & Validate]:::subProcess
+        D2 --> D3[Build Question Bank]:::subProcess
     end
     
-    D --> E[Process Roll Numbers]
+    C --> Input
     
-    subgraph Paper Generation
-        E --> E1[Generate Seed]
-        E1 --> E2[Select Questions]
-        E2 --> E3[Randomize Order]
-        E3 --> E4[Randomize Options]
+    subgraph Generation["⚙️ Paper Generation"]
+        direction TB
+        E1[Create Unique Seeds]:::subProcess
+        E2[Select Questions]:::subProcess
+        E3[Randomize Content]:::subProcess
+        E1 --> E2 --> E3
     end
     
-    subgraph LaTeX Processing
-        E4 --> F1[Create Paper Template]
-        F1 --> F2[Generate Answer Key]
-        F2 --> F3[Compile LaTeX]
-        F3 --> F4[Generate PDF]
+    Input --> Generation
+    
+    subgraph Compilation["📄 Document Processing"]
+        direction TB
+        F1[Generate LaTeX]:::subProcess
+        F2[Create Answer Keys]:::subProcess
+        F3[Compile Documents]:::subProcess
+        F1 --> F2 --> F3
     end
     
-    subgraph Parallel Processing
-        F4 --> G1[Worker Pool]
-        G1 --> G2[Parallel Compilation]
-        G2 --> G3[Combine Results]
+    Generation --> Compilation
+    
+    subgraph Parallel["⚡ Parallel Processing"]
+        direction TB
+        G1[Worker Pool]:::subProcess
+        G2[Process Tasks]:::subProcess
+        G3[Merge Results]:::subProcess
+        G1 --> G2 --> G3
     end
     
-    G3 --> H[Cleanup]
-    H --> I[End]
+    Compilation --> Parallel
     
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style I fill:#f9f,stroke:#333,stroke-width:2px
-    style Question Management fill:#e1f5fe,stroke:#333,stroke-width:2px
-    style Paper Generation fill:#e8f5e9,stroke:#333,stroke-width:2px
-    style LaTeX Processing fill:#fff3e0,stroke:#333,stroke-width:2px
-    style Parallel Processing fill:#f3e5f5,stroke:#333,stroke-width:2px
+    Parallel --> H[Cleanup & Finalize]:::process
+    H --> I([End]):::end
+    
+    style Input fill:#f0f7ff,stroke:#c4d8f5,stroke-width:2px
+    style Generation fill:#fff7e6,stroke:#ffd699,stroke-width:2px
+    style Compilation fill:#f5f0ff,stroke:#d9c4f5,stroke-width:2px
+    style Parallel fill:#e6fff0,stroke:#99e6b3,stroke-width:2px
 ```
 
 ### Component Descriptions
 
-1. **Configuration Loading**
-   - Reads `config.json`
-   - Validates settings
-   - Initializes system parameters
+1. **📥 Input Processing**
+   - Loads and validates configuration
+   - Parses question files
+   - Builds structured question bank
+   - Validates content integrity
 
-2. **Question Management**
-   - Loads and parses `.tex` files
-   - Extracts questions and marks
-   - Organizes by topic
-   - Maintains question bank
+2. **⚙️ Paper Generation**
+   - Generates deterministic seeds
+   - Implements smart question selection
+   - Applies randomization algorithms
+   - Ensures fair distribution
 
-3. **Paper Generation**
-   - Creates unique seeds from roll numbers
-   - Selects questions based on configuration
-   - Randomizes question order
-   - Randomizes multiple-choice options
+3. **📄 Document Processing**
+   - Creates LaTeX templates
+   - Generates answer keys
+   - Handles document compilation
+   - Manages formatting
 
-4. **LaTeX Processing**
-   - Generates LaTeX templates
-   - Creates answer keys
-   - Handles compilation
-   - Manages PDF generation
+4. **⚡ Parallel Processing**
+   - Optimizes resource usage
+   - Manages concurrent tasks
+   - Ensures data consistency
+   - Handles error recovery
 
-5. **Parallel Processing**
-   - Manages worker pool
-   - Distributes compilation tasks
-   - Combines results
-   - Handles errors
-
-6. **Cleanup**
-   - Removes temporary files
-   - Consolidates output
-   - Reports completion
+5. **🔄 System Flow**
+   - Input → Generation → Compilation → Output
+   - Maintains data integrity
+   - Provides progress tracking
+   - Ensures clean cleanup
 
 ## Prerequisites
 
