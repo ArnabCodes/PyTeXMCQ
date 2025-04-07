@@ -251,10 +251,7 @@ class QuestionPaperGenerator:
         ]
         
         for pdf in pdf_files:
-            # Add the PDF with options to handle blank pages
-            latex_content.append(f'\\includepdf[pages=-,pagecommand={{\\thispagestyle{{empty}}}}]{{{pdf}}}')
-            # Add a blank page
-            latex_content.append(r'\afterpage{\null\newpage}')
+            latex_content.append(f'\\includepdf[pages=-,pagecommand={{\\afterpage{{\\clearpage\\mbox{{}}}}}}]{{{pdf}}}')
             
         latex_content.append(r'\end{document}')
         return '\n'.join(latex_content)
