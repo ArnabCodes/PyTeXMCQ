@@ -5,14 +5,11 @@
 *.fdb_latexmk
 *.fls
 *.synctex.gz
-all_answer_keys.pdf
-all_question_papers.pdf
 
 # Questions and answers (private)
 /papers/*.tex
 /answers/*.tex
 /topics/*.tex
-roll_numbers.txt
 
 # Python virtual environment
 .venv/

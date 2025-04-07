@@ -1,33 +1,74 @@
 import os
-import random
-import subprocess
-from pathlib import Path
 import re
+import json
+import random
 import hashlib
 import shutil
-from merge_pdfs import merge_pdfs
+import subprocess
+import sys
+import time
+import threading
+from pathlib import Path
+import tempfile
+
+class ProgressIndicator:
+    def __init__(self, message):
+        self.message = message
+        self.is_running = False
+        self.thread = None
+        
+    def animate(self):
+        chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        i = 0
+        while self.is_running:
+            sys.stdout.write('\r' + chars[i % len(chars)] + ' ' + self.message)
+            sys.stdout.flush()
+            time.sleep(0.1)
+            i += 1
+            
+    def start(self):
+        self.is_running = True
+        self.thread = threading.Thread(target=self.animate)
+        self.thread.start()
+        
+    def stop(self, success=True):
+        self.is_running = False
+        if self.thread:
+            self.thread.join()
+        if success:
+            sys.stdout.write('\r✓ ' + self.message + '\n')
+        else:
+            sys.stdout.write('\r✗ ' + self.message + '\n')
+        sys.stdout.flush()
+
+    def update(self, new_message):
+        self.message = new_message
 
 class QuestionPaperGenerator:
-    def __init__(self, preamble_file, topics_dir, output_dir, answers_dir):
+    def __init__(self, preamble_file, topics_dir):
         self.preamble_file = preamble_file
         self.topics_dir = topics_dir
-        self.output_dir = output_dir
-        self.answers_dir = answers_dir
         self.questions = {}
+        self.temp_dir = None
+        self.original_dir = None
         
-        # Create output directories if they don't exist
-        os.makedirs(output_dir, exist_ok=True)
-        os.makedirs(answers_dir, exist_ok=True)
-        
-    def load_preamble(self):
-        with open(self.preamble_file, 'r') as f:
-            return f.read()
+    def setup_temp_dir(self):
+        """Create a temporary directory for intermediate files."""
+        # Create temp directory in system's temp directory
+        self.temp_dir = tempfile.mkdtemp(prefix='quiz_generator_')
+        # Copy preamble to temp directory once
+        shutil.copy2(self.preamble_file, os.path.join(self.temp_dir, "preamble.tex"))
+        # Store original directory and change to temp directory
+        self.original_dir = os.getcwd()
+        os.chdir(self.temp_dir)
             
     def load_questions(self):
-        for topic_file in os.listdir(self.topics_dir):
+        self.setup_temp_dir()
+        topics_path = os.path.join(self.original_dir, self.topics_dir)
+        for topic_file in os.listdir(topics_path):
             if topic_file.endswith('.tex'):
                 topic = topic_file[:-4]  # Remove .tex extension
-                with open(os.path.join(self.topics_dir, topic_file), 'r') as f:
+                with open(os.path.join(topics_path, topic_file), 'r') as f:
                     content = f.read()
                     # Split content into individual questions
                     questions = re.split(r'\\begin{question}', content)[1:]
@@ -82,17 +123,12 @@ class QuestionPaperGenerator:
         return question
     
     def generate_paper(self, roll_number, questions_per_topic):
+        progress = ProgressIndicator(f"Processing {roll_number}")
+        progress.start()
+        
         # Set the main seed for this roll number
         main_seed = self.get_seed(roll_number)
         random.seed(main_seed)
-        
-        # Create output directories if they don't exist
-        os.makedirs(self.output_dir, exist_ok=True)
-        os.makedirs(self.answers_dir, exist_ok=True)
-        
-        # Copy preamble file to output directories
-        shutil.copy2(self.preamble_file, os.path.join(self.output_dir, "preamble.tex"))
-        shutil.copy2(self.preamble_file, os.path.join(self.answers_dir, "preamble.tex"))
         
         # Create question paper content
         paper_content = r"\input{preamble}" + "\n\n"
@@ -127,7 +163,7 @@ class QuestionPaperGenerator:
         base_filename = f"quiz_{roll_number}"
         
         # Without answers
-        with open(os.path.join(self.output_dir, f"{base_filename}.tex"), 'w') as f:
+        with open(f"{base_filename}.tex", 'w') as f:
             f.write(paper_content)
             
         # With answers
@@ -139,104 +175,167 @@ class QuestionPaperGenerator:
             answer_content += self.randomize_options(question, question_seed, is_answer_key=True)
         answer_content += r"\end{questions}" + "\n" + r"\end{document}"
         
-        with open(os.path.join(self.answers_dir, f"{base_filename}_answers.tex"), 'w') as f:
+        with open(f"{base_filename}_answers.tex", 'w') as f:
             f.write(answer_content)
             
-        # Compile LaTeX files
-        self.compile_latex(os.path.join(self.output_dir, f"{base_filename}.tex"))
-        self.compile_latex(os.path.join(self.answers_dir, f"{base_filename}_answers.tex"))
-    
-    def compile_latex(self, tex_file):
+        # Compile LaTeX files in parallel
+        def compile_tex(tex_file):
+            try:
+                subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_file], 
+                             check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_file], 
+                             check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            except subprocess.CalledProcessError as e:
+                print(f"Error compiling {tex_file}: {e}")
+        
+        # Create threads for parallel compilation
+        threads = []
+        for tex_file in [f"{base_filename}.tex", f"{base_filename}_answers.tex"]:
+            thread = threading.Thread(target=compile_tex, args=(tex_file,))
+            threads.append(thread)
+            thread.start()
+        
+        # Wait for all compilations to complete
+        for thread in threads:
+            thread.join()
+        
+        progress.stop()
+
+    def merge_pdfs(self, output_filename, prefix=''):
+        """Merge all PDFs with given prefix into a single PDF."""
+        progress = ProgressIndicator(f"Creating {output_filename}")
+        progress.start()
+        
+        # Get all PDF files with the given prefix from temp directory
+        pdf_files = [f for f in os.listdir(self.temp_dir) if f.startswith(prefix) and f.endswith('.pdf')]
+        
+        # Filter files based on whether we're creating papers or answers
+        if output_filename == 'papers.pdf':
+            pdf_files = [f for f in pdf_files if not f.endswith('_answers.pdf')]
+        else:  # answers.pdf
+            pdf_files = [f for f in pdf_files if f.endswith('_answers.pdf')]
+            
+        if not pdf_files:
+            progress.stop(success=False)
+            return
+
+        # Sort files to ensure consistent order
+        pdf_files.sort()
+        
+        # Create LaTeX content to merge PDFs
+        latex_content = self._create_merger(pdf_files)
+        
+        # Write LaTeX content to file in temp directory
+        merger_tex = os.path.join(self.temp_dir, 'merger.tex')
+        with open(merger_tex, 'w') as f:
+            f.write(latex_content)
+            
+        # Compile LaTeX file
+        self.compile_latex('merger.tex', silent=True)
+        
+        # Move the merged PDF to original directory
+        shutil.move(os.path.join(self.temp_dir, 'merger.pdf'), 
+                   os.path.join(self.original_dir, output_filename))
+        
+        progress.stop()
+
+    def _create_merger(self, pdf_files):
+        """Create LaTeX content to merge PDFs."""
+        latex_content = [
+            r'\documentclass{article}',
+            r'\usepackage{pdfpages}',
+            r'\usepackage{graphicx}',
+            r'\usepackage{hyperref}',
+            r'\usepackage{afterpage}',
+            r'\begin{document}',
+        ]
+        
+        for pdf in pdf_files:
+            # Add the PDF with options to handle blank pages
+            latex_content.append(f'\\includepdf[pages=-,pagecommand={{\\thispagestyle{{empty}}}}]{{{pdf}}}')
+            # Add a blank page
+            latex_content.append(r'\afterpage{\null\newpage}')
+            
+        latex_content.append(r'\end{document}')
+        return '\n'.join(latex_content)
+
+    def compile_latex(self, tex_file, silent=False):
         try:
-            # Get the directory and filename
-            tex_dir = os.path.dirname(tex_file)
-            tex_filename = os.path.basename(tex_file)
+            # Redirect output if silent
+            output = subprocess.DEVNULL if silent else None
             
-            # Change to the directory containing the tex file
-            current_dir = os.getcwd()
-            os.chdir(tex_dir)
-            
-            # Run pdflatex
-            subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_filename], check=True)
-            # Run twice to ensure references are correct
-            subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_filename], check=True)
-            
-            # Change back to the original directory
-            os.chdir(current_dir)
+            subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_file], 
+                         check=True, stdout=output, stderr=output)
+            subprocess.run(['pdflatex', '-interaction=nonstopmode', tex_file], 
+                         check=True, stdout=output, stderr=output)
         except subprocess.CalledProcessError as e:
             print(f"Error compiling {tex_file}: {e}")
-            
-    def merge_pdfs(self):
-        """Merge all generated PDFs using LaTeX."""
-        # Create LaTeX files to merge PDFs
-        self._create_merger('papers', 'all_question_papers.tex', 'quiz_')
-        self._create_merger('answers', 'all_answer_keys.tex', 'quiz_')
-        
-        # Compile merger files
-        self.compile_latex('all_question_papers.tex')
-        self.compile_latex('all_answer_keys.tex')
-        
-    def _create_merger(self, input_dir, output_file, prefix):
-        """Create a LaTeX file that merges PDFs."""
-        # Get all PDF files in the directory
-        pdf_files = sorted([f for f in os.listdir(input_dir) 
-                          if f.endswith('.pdf') and f.startswith(prefix)])
-        
-        # Create LaTeX content
-        content = []
-        content.append('\\documentclass{article}')
-        content.append('\\usepackage{pdfpages}')
-        content.append('\\begin{document}')
-        
-        # Add each PDF
-        for pdf_file in pdf_files:
-            content.append(f'\\includepdf[pages=-]{{{os.path.join(input_dir, pdf_file)}}}')
-            # Add blank page if number of pages is odd
-            content.append('\\ifodd\\value{page}\\else\\null\\newpage\\fi')
-            
-        content.append('\\end{document}')
-        
-        # Write the merger file
-        with open(output_file, 'w') as f:
-            f.write('\n'.join(content))
 
-def load_roll_numbers(filename):
-    with open(filename, 'r') as f:
-        return [line.strip() for line in f if line.strip()]
+    def cleanup(self):
+        """Remove temporary directory and all its contents."""
+        # Change back to original directory
+        os.chdir(self.original_dir)
+        if self.temp_dir and os.path.exists(self.temp_dir):
+            try:
+                shutil.rmtree(self.temp_dir)
+            except Exception as e:
+                print(f"✗ Error cleaning up temporary directory: {e}")
+
+def expand_roll_numbers(roll_patterns):
+    """Expand roll number patterns into individual roll numbers."""
+    roll_numbers = []
+    for pattern in roll_patterns:
+        if '...' in pattern:
+            # Handle range pattern (e.g., BT24ECE01...04)
+            prefix, range_part = pattern.split('...')
+            # Extract the last numeric part from prefix (e.g., '01' from 'BT24ECE01')
+            prefix_parts = re.match(r'(.*?)(\d+)$', prefix)
+            if prefix_parts:
+                base_prefix = prefix_parts.group(1)  # 'BT24ECE'
+                start_num = int(prefix_parts.group(2))  # 1
+                end_num = int(range_part)  # 4
+                num_width = len(prefix_parts.group(2))  # 2 (from '01')
+                # Generate all numbers in the range
+                for num in range(start_num, end_num + 1):
+                    roll_number = f"{base_prefix}{num:0{num_width}d}"
+                    roll_numbers.append(roll_number)
+        else:
+            # Handle single roll number
+            roll_numbers.append(pattern)
+    return roll_numbers
 
 def main():
-    # Configuration
-    preamble_file = "preamble.tex"
-    topics_dir = "topics"
-    output_dir = "papers"
-    answers_dir = "answers"
-    roll_numbers_file = "roll_numbers.txt"
+    # Load configuration
+    with open('config.json', 'r') as f:
+        config = json.load(f)
     
-    # Load roll numbers from file
-    roll_numbers = load_roll_numbers(roll_numbers_file)
+    # Expand roll number patterns
+    roll_numbers = expand_roll_numbers(config['roll_numbers'])
     
-    # Example questions per topic configuration
-    questions_per_topic = {
-        "quantum_mechanics": 0,
-        "quantum_applications": 0,
-        "crystal_structure": 0,
-        "semiconductor_physics": 10,
-        "device_physics": 10,
-        "laser_optics": 1
-    }
+    # Initialize generator
+    generator = QuestionPaperGenerator("preamble.tex", "topics")
     
-    generator = QuestionPaperGenerator(preamble_file, topics_dir, output_dir, answers_dir)
-    generator.load_questions()
-    
-    # Generate papers for all roll numbers
-    for roll_number in roll_numbers:
-        print(f"Generating paper for roll number: {roll_number}")
-        generator.generate_paper(roll_number, questions_per_topic)
+    try:
+        # Generate papers for all roll numbers
+        generator.load_questions()
+        for roll_number in roll_numbers:
+            generator.generate_paper(roll_number, config['questions_per_topic'])
         
-    # Merge all PDFs
-    print("Merging PDFs...")
-    generator.merge_pdfs()
-    print("Done!")
+        # Merge all question papers and answer keys
+        generator.merge_pdfs('papers.pdf', 'quiz_')
+        generator.merge_pdfs('answers.pdf', 'quiz_')
+        
+        # Cleanup temporary files
+        progress = ProgressIndicator("Cleaning up")
+        progress.start()
+        generator.cleanup()
+        progress.stop()
+        
+        print("\n✨ All done! Find your PDFs in the current directory.")
+    finally:
+        # If we crashed, still try to clean up
+        if 'progress' not in locals():
+            generator.cleanup()
 
 if __name__ == "__main__":
     main() 
