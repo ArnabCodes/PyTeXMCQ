@@ -1,157 +1,127 @@
-# LaTeX Quiz Generator User Guide
+# Physics Quiz Paper Generator - User Guide
 
-This guide provides detailed instructions on how to use the LaTeX Quiz Generator effectively.
+## Overview
+This system generates unique quiz papers for physics students, with randomized questions and options. Each student gets a unique paper based on their roll number, and corresponding answer keys are generated automatically.
 
-## Table of Contents
-1. [Setting Up Questions](#setting-up-questions)
-2. [Question Format](#question-format)
-3. [LaTeX Formatting](#latex-formatting)
-4. [Configuration](#configuration)
-5. [Generating Quizzes](#generating-quizzes)
-6. [Troubleshooting](#troubleshooting)
+## Installation
 
-## Setting Up Questions
+1. **System Requirements**:
+   - Python 3.x
+   - LaTeX distribution (with pdflatex)
+   - Required Python packages: None (uses only standard library)
 
-### Directory Structure
-Place your questions in `.tex` files within the `topics/` directory. You can organize questions by topic, difficulty, or any other classification:
+2. **Directory Setup**:
+   ```
+   Quiz 2/
+   ├── generate_papers.py    # Main program
+   ├── merge_pdfs.py        # PDF merging utility
+   ├── preamble.tex         # LaTeX formatting template
+   ├── roll_numbers.txt     # List of student roll numbers
+   ├── topics/              # Question files by topic
+   ├── papers/              # Generated question papers
+   └── answers/             # Generated answer keys
+   ```
 
-```
-topics/
-├── chapter1.tex
-├── chapter2.tex
-└── advanced_topics.tex
-```
+## Usage Instructions
 
-### Question File Format
-Each question file should contain one or more questions in the following format:
+### 1. Setting Up Questions
 
-```latex
-\question[0.5] What is the energy of a photon with wavelength 500 nm?
-\begin{oneparcheckboxes}
-    \choice 1.24 eV
-    \CorrectChoice 2.48 eV
-    \choice 3.1 eV
-    \choice 4.96 eV
-\end{oneparcheckboxes}
+1. Create question files in the `topics/` directory:
+   - Each file should contain questions in LaTeX format
+   - Example format:
+     ```latex
+     \begin{question}
+     Question text
+     \begin{oneparcheckboxes}
+     \choice Option 1
+     \choice Option 2
+     \correctchoice Correct Option
+     \choice Option 3
+     \end{oneparcheckboxes}
+     \end{question}
+     ```
 
-\question[0.5] The forbidden energy gap for silicon at room temperature is:
-\begin{oneparcheckboxes}
-    \choice 0.7 eV
-    \CorrectChoice 1.1 eV
-    \choice 1.5 eV
-    \choice 2.1 eV
-\end{oneparcheckboxes}
-```
+2. Add roll numbers to `roll_numbers.txt`:
+   - One roll number per line
+   - Example:
+     ```
+     BT24ECE001
+     BT24ECE002
+     BT24ECE003
+     ```
 
-## Question Format
+### 2. Generating Papers
 
-### Basic Structure
-- Use `\question[points]` to start each question
-- Points are specified in square brackets
-- Use `\begin{oneparcheckboxes}` for multiple choice options
-- Mark correct answers with `\CorrectChoice`
-- Mark incorrect answers with `\choice`
+1. Run the generator:
+   ```bash
+   python generate_papers.py
+   ```
 
-### Including Mathematical Expressions
-```latex
-\question[1] Solve the equation: \( E = mc^2 \) for \( m \) when \( E = 10 \) J and \( c = 3 \times 10^8 \) m/s.
-```
+2. The system will:
+   - Generate unique papers for each roll number
+   - Create corresponding answer keys
+   - Compile all documents to PDF
+   - Store files in `papers/` and `answers/` directories
 
-### Including Figures
-```latex
-\question[1] What does this circuit diagram represent?
-\begin{center}
-\includegraphics[width=0.5\textwidth]{figures/circuit.png}
-\end{center}
-```
+3. Merge all PDFs:
+   ```bash
+   python merge_pdfs.py
+   ```
+   This creates:
+   - `all_question_papers.pdf`
+   - `all_answer_keys.pdf`
 
-## LaTeX Formatting
+### 3. Customizing the Format
 
-### Available Packages
-The template includes several useful packages:
-- `siunitx` for SI units
-- `amsmath` for mathematical expressions
-- `graphicx` for images
-- `color` for colored text
+1. Edit `preamble.tex` to modify:
+   - Paper title and header
+   - Constants table
+   - Formatting options
+   - Question point values
 
-### Using SI Units
-```latex
-\question[0.5] A current of \SI{2}{\ampere} flows through a \SI{5}{\ohm} resistor. What is the voltage?
-```
+2. Modify `generate_papers.py` to change:
+   - Number of questions per topic
+   - Question selection criteria
+   - Output formatting
 
-### Mathematical Formatting
-```latex
-\question[1] Evaluate the integral:
-\[ \int_0^{\pi} \sin(x) dx \]
-```
+## Features
 
-## Configuration
-
-### Roll Numbers
-Add student roll numbers to `roll_numbers.txt`:
-```
-BT24ECE001
-BT24ECE002
-BT24ECE003
-```
-
-### Customizing Headers
-Modify the header in `preamble.tex` to change:
-- Title format
-- Department name
-- Course information
-- Time duration
-- Maximum marks
-
-### Customizing Layout
-Adjust in `preamble.tex`:
-- Page margins
-- Font size
-- Spacing between questions
-- Choice formatting
-
-## Generating Quizzes
-
-### Basic Generation
-```bash
-python generate_papers.py
-```
-
-### Merging PDFs
-```bash
-python merge_pdfs.py
-```
-
-### Output Files
-- Individual question papers: `papers/quiz_ROLLNUMBER.pdf`
-- Individual answer keys: `papers/quiz_ROLLNUMBER_answers.pdf`
-- Combined papers: `all_question_papers.pdf`
-- Combined answers: `all_answer_keys.pdf`
+- **Unique Papers**: Each student gets a different paper based on their roll number
+- **Randomization**: Questions and options are randomly ordered
+- **Constants Table**: Each paper includes a table of physical constants
+- **Answer Keys**: Automatic generation of answer keys
+- **PDF Output**: Professional-looking PDFs with proper formatting
 
 ## Troubleshooting
 
-### Common Issues
+1. **LaTeX Errors**:
+   - Check if all required LaTeX packages are installed
+   - Verify question formatting in topic files
+   - Ensure preamble.tex is properly configured
 
-1. **LaTeX Compilation Errors**
-   - Check for missing packages
-   - Verify mathematical expressions are properly formatted
-   - Ensure image paths are correct
+2. **Python Errors**:
+   - Verify Python version (3.x required)
+   - Check file permissions
+   - Ensure all required directories exist
 
-2. **Python Errors**
-   - Verify Python version (3.8+ required)
-   - Check virtual environment is activated
-   - Confirm all required packages are installed
+3. **Missing Files**:
+   - Verify roll_numbers.txt exists
+   - Check topic files in topics/ directory
+   - Ensure output directories (papers/, answers/) exist
 
-3. **PDF Generation Issues**
-   - Ensure LaTeX distribution is properly installed
-   - Check write permissions in output directories
-   - Verify no PDFs are open in other programs
+## Maintenance
 
-### Getting Help
-If you encounter issues:
-1. Check the error messages in the terminal
-2. Review the LaTeX log files
-3. Open an issue on GitHub with:
-   - Error messages
-   - Relevant code snippets
-   - System information 
+1. **Adding Questions**:
+   - Add new questions to appropriate topic files
+   - Follow the question format exactly
+   - Mark correct answers with \correctchoice
+
+2. **Updating Roll Numbers**:
+   - Edit roll_numbers.txt
+   - One roll number per line
+   - No special characters or spaces
+
+3. **Modifying Format**:
+   - Edit preamble.tex for layout changes
+   - Update generate_papers.py for logic changes
+   - Test changes with a small set of roll numbers first 

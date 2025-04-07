@@ -186,7 +186,7 @@ def main():
         "quantum_mechanics": 0,
         "quantum_applications": 0,
         "crystal_structure": 0,
-        "semiconductor_physics": 10,
+        "semiconductor_physics": 11,
         "device_physics": 10,
         "laser_optics": 1
     }

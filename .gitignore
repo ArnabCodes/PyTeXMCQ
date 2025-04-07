@@ -1,20 +1,38 @@
-# Generated files
+# LaTeX files
+*.tex
 *.pdf
 *.aux
 *.log
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+*.toc
+*.out
+*.bbl
+*.blg
 
-# Questions and answers (private)
-/papers/*.tex
-/answers/*.tex
-/topics/*.tex
-
-# Python virtual environment
-.venv/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# macOS system files
-.DS_Store 
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Project specific
+papers/
+answers/
+topics/
+roll_numbers.txt 
