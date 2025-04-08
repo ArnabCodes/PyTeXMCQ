@@ -17,6 +17,108 @@ A Python-based tool for generating randomized multiple-choice quiz papers and an
 - 📄 Adds blank pages when needed for easier printing
 - 📊 Automatically calculates and displays total marks
 
+## Prerequisites
+
+- Python 3.8 or higher
+- LaTeX distribution (TeX Live or MiKTeX)
+- `pdflatex` command-line tool
+
+## Installation
+
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/ArnabCodes/PyTeXMCQ.git
+   cd PyTeXMCQ
+   ```
+
+2. Create and activate a virtual environment (optional):
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+   ```
+
+3. Verify LaTeX installation:
+   ```bash
+   pdflatex --version
+   ```
+
+## Project Structure
+
+```
+PyTeXMCQ/
+├── generate_papers.py     # Main script for generating quizzes
+├── preamble.tex          # LaTeX preamble with formatting
+├── config.json           # Configuration file
+└── topics/              # Directory for question banks
+```
+
+## Usage
+
+1. Create your question bank:
+   - Place your questions in `.tex` files in the `topics/` directory
+   - Follow the template format:
+     ```latex
+     \begin{question}[2]  % Points for this question
+     Which experiment provided direct evidence for the particle nature of light?
+
+     \begin{oneparcheckboxes}
+     \choice Young's double-slit experiment
+     \choice Michelson-Morley experiment
+     \correctchoice Compton effect
+     \choice Davisson-Germer experiment
+     \end{oneparcheckboxes}
+     \end{question}
+     ```
+   - If no points are specified, the question is worth 1 mark
+   - For consistent total marks across papers, group questions with same marks in the same file
+
+2. Configure the generator:
+   - Edit `config.json` to specify:
+     - Number of questions per topic
+     - Roll number patterns (e.g., "BT24ECE01...04")
+
+3. Generate quizzes:
+   ```bash
+   python generate_papers.py
+   ```
+
+4. Find your output:
+   - `papers.pdf`: All question papers merged
+   - `answers.pdf`: All answer keys merged
+
+## Important Notes
+
+- Roll numbers act as seeds for randomization, ensuring the same roll number always gets the same paper
+- Questions are compiled in parallel for better performance
+- Total marks are automatically calculated and displayed
+- Blank pages are added when needed for easier double-sided printing
+- For consistent total marks, group questions with same marks in the same file
+
+## Configuration
+
+### config.json
+```json
+{
+    "questions_per_topic": {
+        "semiconductor_physics": 10,
+        "device_physics": 10,
+        "laser_optics": 1
+    },
+    "roll_numbers": [
+        "BT24ECE01...04",
+        "BT24ECE10",
+        "BT24ECE15...18"
+    ]
+}
+```
+
+### preamble.tex
+Customize your quiz appearance by modifying:
+- Page layout
+- Font settings
+- Header/footer content
+- Question formatting
+
 ## Technical Architecture
 
 The codebase is built around two main classes that handle different aspects of the quiz generation process:
@@ -24,7 +126,6 @@ The codebase is built around two main classes that handle different aspects of t
 ### 1. ProgressIndicator Class
 This class provides a visual progress indicator during the quiz generation process. It features:
 - An animated spinner with percentage completion
-- Smooth percentage transitions
 - Thread-safe operation
 - Customizable messages
 - Success/failure status indicators
@@ -158,108 +259,6 @@ flowchart TB
    - Maintains data integrity
    - Provides progress tracking
    - Ensures clean cleanup
-
-## Prerequisites
-
-- Python 3.8 or higher
-- LaTeX distribution (TeX Live or MiKTeX)
-- `pdflatex` command-line tool
-
-## Installation
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/ArnabCodes/PyTeXMCQ.git
-   cd PyTeXMCQ
-   ```
-
-2. Create and activate a virtual environment (optional):
-   ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
-   ```
-
-3. Verify LaTeX installation:
-   ```bash
-   pdflatex --version
-   ```
-
-## Project Structure
-
-```
-PyTeXMCQ/
-├── generate_papers.py     # Main script for generating quizzes
-├── preamble.tex          # LaTeX preamble with formatting
-├── config.json           # Configuration file
-└── topics/              # Directory for question banks
-```
-
-## Usage
-
-1. Create your question bank:
-   - Place your questions in `.tex` files in the `topics/` directory
-   - Follow the template format:
-     ```latex
-     \begin{question}[2]  % Points for this question
-     Which experiment provided direct evidence for the particle nature of light?
-
-     \begin{oneparcheckboxes}
-     \choice Young's double-slit experiment
-     \choice Michelson-Morley experiment
-     \correctchoice Compton effect
-     \choice Davisson-Germer experiment
-     \end{oneparcheckboxes}
-     \end{question}
-     ```
-   - If no points are specified, the question is worth 1 mark
-   - For consistent total marks across papers, group questions with same marks in the same file
-
-2. Configure the generator:
-   - Edit `config.json` to specify:
-     - Number of questions per topic
-     - Roll number patterns (e.g., "BT24ECE01...04")
-
-3. Generate quizzes:
-   ```bash
-   python generate_papers.py
-   ```
-
-4. Find your output:
-   - `papers.pdf`: All question papers merged
-   - `answers.pdf`: All answer keys merged
-
-## Important Notes
-
-- Roll numbers act as seeds for randomization, ensuring the same roll number always gets the same paper
-- Questions are compiled in parallel for better performance
-- Total marks are automatically calculated and displayed
-- Blank pages are added when needed for easier double-sided printing
-- For consistent total marks, group questions with same marks in the same file
-
-## Configuration
-
-### config.json
-```json
-{
-    "questions_per_topic": {
-        "semiconductor_physics": 10,
-        "device_physics": 10,
-        "laser_optics": 1
-    },
-    "roll_numbers": [
-        "BT24ECE01...04",
-        "BT24ECE10",
-        "BT24ECE15...18"
-    ]
-}
-```
-
-### preamble.tex
-Customize your quiz appearance by modifying:
-- Page layout
-- Font settings
-- Header/footer content
-- Question formatting
 
 ## Contributing
 
