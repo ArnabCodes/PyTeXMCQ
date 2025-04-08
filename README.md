@@ -201,12 +201,13 @@ PyTeXMCQ/
    - Follow the template format:
      ```latex
      \begin{question}[2]  % Points for this question
-     Your question here
+     Which experiment provided direct evidence for the particle nature of light?
+
      \begin{oneparcheckboxes}
-     \choice Option A
-     \correctchoice Option B
-     \choice Option C
-     \choice Option D
+     \choice Young's double-slit experiment
+     \choice Michelson-Morley experiment
+     \correctchoice Compton effect
+     \choice Davisson-Germer experiment
      \end{oneparcheckboxes}
      \end{question}
      ```
