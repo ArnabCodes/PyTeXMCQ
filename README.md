@@ -1,8 +1,5 @@
 # PyTeXMCQ
 
-<div align="center">
-  <img src="logo.svg" alt="PyTeXMCQ Logo" width="200" height="200"/>
-</div>
 
 A Python-based tool for generating randomized multiple-choice quiz papers and answer keys in LaTeX format. Perfect for educators who need to create different versions of the same quiz for multiple students while maintaining consistency and professional formatting.
 
@@ -268,14 +265,6 @@ We welcome contributions! Here's how you can help:
 2. Create a feature branch
 3. Make your changes
 4. Submit a pull request
-
-### Areas for Contribution
-- Add support for different question types
-- Implement question difficulty levels
-- Add support for images and diagrams
-- Create a GUI interface
-- Improve error handling
-- Add unit tests
 
 ## License
 
